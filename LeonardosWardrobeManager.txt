@@ -1,8 +1,8 @@
 ## Title: Leonardo's Wardrobe Manager
 ## Author: Leonardo1123
 ## APIVersion: 101031
-## AddOnVersion: 40
-## Version: 0.4.0
+## AddOnVersion: 41
+## Version: 0.4.1
 ## Description: Allows automatic state-based outfit switching
 ## DependsOn: LibAddonMenu-2.0>=28
 ## OptionalDependsOn: LibFeedback
@@ -10,5 +10,5 @@
 
 LeonardosWardrobeManager.lua
 
-LibFeedback/LibFeedback.txt
-LibFeedback/LibFeedback.lua
+Helper.lua
+Settings.lua
