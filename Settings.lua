@@ -1,5 +1,5 @@
 local LAM2 = LibAddonMenu2
-local LWM = LeonardosWardrobeManager
+local LWM   = LeonardosWardrobeManager
 
 -- LAM2 Helpers
 function LWM.MakeOutfitDropdown(name, tip, varName, disFunc, alliance)
