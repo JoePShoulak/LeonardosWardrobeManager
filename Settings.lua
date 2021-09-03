@@ -1,5 +1,5 @@
 local LAM2 = LibAddonMenu2
-local LWM = LeonardosWardrobeManager
+local LWM   = LeonardosWardrobeManager
 
 -- LAM2 Helpers
 function LWM.MakeOutfitDropdown(name, tip, varName, disFunc, alliance)
@@ -13,7 +13,7 @@ function LWM.MakeOutfitDropdown(name, tip, varName, disFunc, alliance)
         choicesValues = choices,
         getFunc = function() return LWM.vars.outfitIndices[varName] end,
         setFunc = function(var) LWM.SetStateOutfitChoice(varName, var) end,
-        disabled = disFunc
+        disabled = disFunc,
     }
 end
 

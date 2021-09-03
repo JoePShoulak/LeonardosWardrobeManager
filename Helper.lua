@@ -26,7 +26,7 @@ function LWM.SetStateOutfitChoice(state, index)
         LWM.ChangeOutfit(index)
     end
 
-    LWM.vars[state] = index
+    LWM.vars.outfitIndices[state] = index
 end
 
 function LWM.ChangeOutfit(index)
@@ -37,7 +37,7 @@ function LWM.ChangeOutfit(index)
     end
 end
 
-function LWM.ChangeToCombatOutfit()
+function LWM.ChangeToStateOutfit()
     if LWM.inCombat then
         if LWM.vars.perBarToggle then
             local weaponPair, _ = GetActiveWeaponPairInfo()
@@ -51,6 +51,10 @@ function LWM.ChangeToCombatOutfit()
         else
             LWM.ChangeOutfit(LWM.vars.outfitIndices.combat)
         end
+    elseif LWM.inStealth > 0 then
+        LWM.ChangeOutfit(LWM.vars.outfitIndices.stealth)
+    else
+        LWM.ChangeToLocationOutfit()
     end
 end
 

@@ -3,24 +3,26 @@ LeonardosWardrobeManager = LeonardosWardrobeManager or {}
 local LWM = LeonardosWardrobeManager
 
 -- Main Table Details
-LWM.name = "LeonardosWardrobeManager"
-LWM.fullName = "Leonardo's Wardrobe Manager"
-LWM.author = "@Leonardo1123"
+LWM.name            = "LeonardosWardrobeManager"
+LWM.fullName        = "Leonardo's Wardrobe Manager"
+LWM.author          = "@Leonardo1123"
 LWM.variableVersion = 13
 
-LWM.allOutfits = {"No Outfit"}
-LWM.allOutfitChoices = {0}
-LWM.allAlliedOutfits = {"Alliance Default", "No Outfit"}
-LWM.allAlliedOutfitChoices = {ALLIANCE_DEFAULT, NO_OUTFIT}
+LWM.executing = false
+
+LWM.allOutfits              = {"No Outfit"}
+LWM.allOutfitChoices        = {0}
+LWM.allAlliedOutfits        = {"Alliance Default", "No Outfit"}
+LWM.allAlliedOutfitChoices  = {ALLIANCE_DEFAULT, NO_OUTFIT}
 
 -- Check for optional dependencies
 LWM.LibFeedbackInstalled = nil ~= LibFeedback
 
 -- Misc. declarations
-local OUTFIT_OFFSET = 1
-local isFirstTimePlayerActivated = true
-local NO_OUTFIT         = 0
-local ALLIANCE_DEFAULT  = -1
+local OUTFIT_OFFSET                 = 1
+local isFirstTimePlayerActivated    = true
+local NO_OUTFIT                     = 0
+local ALLIANCE_DEFAULT              = -1
 
 LWM.regularOutfits = {
     "default",      "combat",       "mainbar",      "backbar",      "stealth",
@@ -44,18 +46,13 @@ LWM.default = {
     settings = { perBarToggle = false, }
 }
 
-for i=1,#LWM.regularOutfits do
-    LWM.default.outfitIndices[LWM.regularOutfits[i]] = NO_OUTFIT
-end
+for i=1,#LWM.regularOutfits do LWM.default.outfitIndices[LWM.regularOutfits[i]] = NO_OUTFIT end
 
-for i=1,#LWM.allianceOutfits do
-    LWM.default.outfitIndices[LWM.allianceOutfits[i]] = ALLIANCE_DEFAULT
-end
+for i=1,#LWM.allianceOutfits do LWM.default.outfitIndices[LWM.allianceOutfits[i]] = ALLIANCE_DEFAULT end
 
 -- Event functions
-
 function LWM.OnOutfitRenamed(_, _, _)
-    name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
+    local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
 
     for i=1,GetNumUnlockedOutfits() do
         LWM.allOutfits[i + OUTFIT_OFFSET]           = name
@@ -66,50 +63,50 @@ end
 function LWM.OnPlayerActivated(_, initial)
     if initial then
         if isFirstTimePlayerActivated == false then -- After fast travel
-            LWM.ChangeToLocationOutfit()
+            LWM.CheckState()
+            LWM.ChangeToStateOutfit()
         else -- --------------------------------- after login
             isFirstTimePlayerActivated = false
+            LWM.RenameUnnamedOutfits()
+            LWM.CheckState()
+            LWM.ChangeToStateOutfit()
         end
     else -- ------------------------------------- after reloadui
         isFirstTimePlayerActivated = false
+        LWM.RenameUnnamedOutfits()
+        LWM.CheckState()
+        LWM.ChangeToStateOutfit()
     end
+end
+
+function LWM.CheckState()
+    local inCombat = IsUnitInCombat("player")
+    local inStealth = GetUnitStealthState("player")
+
+    if inCombat ~= LWM.inCombat then LWM.inCombat = inCombat end
+    if inStealth ~= LWM.inStealth then LWM.inStealth = inStealth end
 end
 
 function LWM.OnPlayerCombatState(_, inCombat)
     if inCombat ~= LWM.inCombat then
         LWM.inCombat = inCombat
-        if LWM.inCombat then
-            LWM.ChangeToCombatOutfit()
-        else
-            if LWM.inStealth > 0 then
-                LWM.ChangeOutfit(LWM.vars.outfitIndices.stealth)
-            else
-                LWM.ChangeToLocationOutfit()
-            end
-        end
+        LWM.ChangeToStateOutfit()
     end
 end
 
-function LWM.OnPlayerStealthState(_, unitTag, StealthState)
-    if StealthState ~= LWM.inStealth and unitTag == "player" then
-        LWM.inStealth = StealthState
-        if LWM.inStealth > 0 then
-            LWM.ChangeOutfit(LWM.vars.outfitIndices.stealth)
-        else
-            if LWM.inCombat then
-                LWM.ChangeToCombatOutfit()
-            else
-                LWM.ChangeToLocationOutfit()
-            end
-        end
+function LWM.OnPlayerStealthState(_, unitTag, inStealth)
+    if inStealth ~= LWM.inStealth and unitTag == "player" then
+        LWM.inStealth = inStealth
+        LWM.ChangeToStateOutfit()
     end
 end
 
 function LWM.OnPlayerRes(_)
-    LWM.ChangeToLocationOutfit()
+    LWM.CheckState()
+    LWM.ChangeToStateOutfit()
 end
 
-function LWM.OnPlayerUseOutfitStation(_)
+function LWM.RenameUnnamedOutfits()
     for i=1,GetNumUnlockedOutfits() do
         local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
         if name == "" then
@@ -124,12 +121,16 @@ function LWM.OnPlayerUseOutfitStation(_)
     end
 end
 
--- "Main" functions
+function LWM.OnPlayerUseOutfitStation(_)
+    LWM.RenameUnnamedOutfits()
+    LWM.ChangeToLocationOutfit()
+end
 
+-- "Main" functions
 function LWM:Initialize()
     LWM.vars = ZO_SavedVars:NewCharacterIdSettings("LWMVars", LWM.variableVersion, nil, LWM.default, GetWorldName())
 
-    local handlers = ZO_AlertText_GetHandlers() -- TODO: Make this safer
+    local handlers = ZO_AlertText_GetHandlers()
     handlers[EVENT_OUTFIT_EQUIP_RESPONSE] = function() end
 
     self.inCombat = IsUnitInCombat("player")
@@ -167,13 +168,13 @@ function LWM:Initialize()
 
     LWM.initSettings()
 
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_OUTFIT_RENAME_RESPONSE, self.OnOutfitRenamed)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, self.OnPlayerActivated)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, self.OnPlayerCombatState)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STEALTH_STATE_CHANGED, self.OnPlayerStealthState)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_REINCARNATED, self.OnPlayerRes)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_DYEING_STATION_INTERACT_START , self.OnPlayerUseOutfitStation)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_ACTIVE_WEAPON_PAIR_CHANGED , self.ChangeToCombatOutfit)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_OUTFIT_RENAME_RESPONSE,         self.OnOutfitRenamed)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED,               self.OnPlayerActivated)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE,            self.OnPlayerCombatState)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_STEALTH_STATE_CHANGED,          self.OnPlayerStealthState)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_REINCARNATED,            self.OnPlayerRes)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_DYEING_STATION_INTERACT_END,    self.OnPlayerUseOutfitStation)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_ACTIVE_WEAPON_PAIR_CHANGED,     self.ChangeToStateOutfit)
 end
 
 function LWM.OnAddOnLoaded(_, addonName)
