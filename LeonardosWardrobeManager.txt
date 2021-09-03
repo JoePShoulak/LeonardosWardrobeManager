@@ -1,9 +1,9 @@
 ## Title: Leonardo's Wardrobe Manager
 ## Author: Leonardo1123
 ## APIVersion: 101031
-## AddOnVersion: 20
-## Version: 0.2.0
-## Description: Helps manage your wardrobe
+## AddOnVersion: 40
+## Version: 0.4.0
+## Description: Allows automatic state-based outfit switching
 ## DependsOn: LibAddonMenu-2.0>=28
 ## OptionalDependsOn: LibFeedback
 ## SavedVariables: LWMVars
