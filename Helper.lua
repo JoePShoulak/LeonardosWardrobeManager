@@ -39,14 +39,14 @@ end
 
 function LWM.ChangeToStateOutfit()
     if LWM.inCombat then
-        if LWM.vars.perBarToggle then
+        if LWM.vars.settings.perBarToggle then
             local weaponPair, _ = GetActiveWeaponPairInfo()
             local mainBar = (weaponPair == 1)
 
             if mainBar then
-                LWM.ChangeOutfit(LWM.vars.outfitIndices.mainBar)
+                LWM.ChangeOutfit(LWM.vars.outfitIndices.mainbar)
             else
-                LWM.ChangeOutfit(LWM.vars.outfitIndices.backBar)
+                LWM.ChangeOutfit(LWM.vars.outfitIndices.backbar)
             end
         else
             LWM.ChangeOutfit(LWM.vars.outfitIndices.combat)
@@ -66,11 +66,12 @@ function LWM.ChangeToZoneOutfit()
         zoneId = GetParentZoneId(zoneId)
     end
 
-    local outfit, alliance = allZoneIds[zoneId]
+    local zone = allZoneIds[zoneId]
+    local outfit = zone.outfit
 
     if outfit ~= -1 then
         LWM.ChangeOutfit(outfit)
-    else
+    elseif alliance then
         if alliance=="dominion" then
             LWM.ChangeOutfit(LWM.vars.outfitIndices.dominion)
         elseif alliance=="covenant" then
@@ -78,6 +79,8 @@ function LWM.ChangeToZoneOutfit()
         elseif alliance=="pact" then
             LWM.ChangeOutfit(LWM.vars.outfitIndices.pact)
         end
+    else
+        LWM.ChangeOutfit(LWM.vars.outfitIndices.default)
     end
 end
 

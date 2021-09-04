@@ -6,9 +6,12 @@ local LWM = LeonardosWardrobeManager
 LWM.name            = "LeonardosWardrobeManager"
 LWM.fullName        = "Leonardo's Wardrobe Manager"
 LWM.author          = "@Leonardo1123"
-LWM.variableVersion = 13
+LWM.variableVersion = 14
 
 LWM.executing = false
+
+local NO_OUTFIT                     = 0
+local ALLIANCE_DEFAULT              = -1
 
 LWM.allOutfits              = {"No Outfit"}
 LWM.allOutfitChoices        = {0}
@@ -21,8 +24,7 @@ LWM.LibFeedbackInstalled = nil ~= LibFeedback
 -- Misc. declarations
 local OUTFIT_OFFSET                 = 1
 local isFirstTimePlayerActivated    = true
-local NO_OUTFIT                     = 0
-local ALLIANCE_DEFAULT              = -1
+
 
 LWM.regularOutfits = {
     "default",      "combat",       "mainbar",      "backbar",      "stealth",
