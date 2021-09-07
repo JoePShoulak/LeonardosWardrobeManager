@@ -1,5 +1,9 @@
 local LWM = LeonardosWardrobeManager
 
+local NO_OUTFIT             = 0
+local OUTFIT_DEFAULT        = -1
+local ALLIANCE_DEFAULT      = -2
+
 function LWM.GetAbilityName(rawSlot, bar)
     bar = bar or HOTBAR_CATEGORY_PRIMARY
     local slot = rawSlot + 2
@@ -29,7 +33,7 @@ function LWM.SetStateOutfitChoice(state, index)
 end
 
 function LWM.ChangeOutfit(index)
-    if index == 0 then
+    if index == NO_OUTFIT then
         UnequipOutfit()
     else
         EquipOutfit(GAMEPLAY_ACTOR_CATEGORY_PLAYER, index)
@@ -68,9 +72,11 @@ function LWM.ChangeToZoneOutfit()
     local zone = allZoneIds[zoneId]
     local outfit = zone.outfit
 
-    if outfit ~= -1 then
+    if outfit >= 0 then
         LWM.ChangeOutfit(outfit)
-    elseif alliance then
+    elseif outfit == OUTFIT_DEFAULT then
+        LWM.ChangeOutfit(LWM.vars.outfitIndices.default)
+    else
         if alliance=="dominion" then
             LWM.ChangeOutfit(LWM.vars.outfitIndices.dominion)
         elseif alliance=="covenant" then
@@ -78,8 +84,6 @@ function LWM.ChangeToZoneOutfit()
         elseif alliance=="pact" then
             LWM.ChangeOutfit(LWM.vars.outfitIndices.pact)
         end
-    else
-        LWM.ChangeOutfit(LWM.vars.outfitIndices.default)
     end
 end
 

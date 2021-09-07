@@ -6,17 +6,20 @@ local LWM = LeonardosWardrobeManager
 LWM.name            = "LeonardosWardrobeManager"
 LWM.fullName        = "Leonardo's Wardrobe Manager"
 LWM.author          = "@Leonardo1123"
-LWM.variableVersion = 14
+LWM.variableVersion = 17
 
 LWM.executing = false
 
 local NO_OUTFIT             = 0
-local ALLIANCE_DEFAULT      = -1
+local OUTFIT_DEFAULT        = -1
+local ALLIANCE_DEFAULT      = -2
 
-LWM.allOutfits              = {"No Outfit"}
-LWM.allOutfitChoices        = {0}
-LWM.allAlliedOutfits        = {"Alliance Default", "No Outfit"}
-LWM.allAlliedOutfitChoices  = {ALLIANCE_DEFAULT, NO_OUTFIT}
+LWM.defaultOutfits          = {"No Outfit"}
+LWM.defaultOutfitChoices    = {NO_OUTFIT}
+LWM.allOutfits              = {"Default Outfit", "No Outfit"}
+LWM.allOutfitChoices        = {OUTFIT_DEFAULT, NO_OUTFIT}
+LWM.allAlliedOutfits        = {"Default Outfit", "Alliance Default", "No Outfit"}
+LWM.allAlliedOutfitChoices  = {OUTFIT_DEFAULT, ALLIANCE_DEFAULT, NO_OUTFIT}
 
 -- Check for optional dependencies
 LWM.LibFeedbackInstalled = nil ~= LibFeedback
@@ -25,9 +28,8 @@ LWM.LibFeedbackInstalled = nil ~= LibFeedback
 local OUTFIT_OFFSET                 = 1
 local isFirstTimePlayerActivated    = true
 
-
 LWM.regularOutfits = {
-    "default",      "combat",       "mainbar",      "backbar",      "stealth",
+    "combat",       "mainbar",      "backbar",      "stealth",
     "house",        "dungeon",
     "cyrodiil",     "cyrodiil_d",   "imperial",     "sewers",       "battleground",
     "dominion",     "covenant",     "pact",
@@ -48,17 +50,18 @@ LWM.default = {
     settings = { perBarToggle = false, }
 }
 
-for i=1,#LWM.regularOutfits do LWM.default.outfitIndices[LWM.regularOutfits[i]] = NO_OUTFIT end
-
+LWM.default.outfitIndices["default"] = NO_OUTFIT
+for i=1,#LWM.regularOutfits  do LWM.default.outfitIndices[LWM.regularOutfits[i]]  = OUTFIT_DEFAULT end
 for i=1,#LWM.allianceOutfits do LWM.default.outfitIndices[LWM.allianceOutfits[i]] = ALLIANCE_DEFAULT end
 
 -- Event functions
 function LWM.OnOutfitRenamed(_, _, _)
-    local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
 
     for i=1,GetNumUnlockedOutfits() do
-        LWM.allOutfits[i + OUTFIT_OFFSET]           = name
-        LWM.allAlliedOutfits[i + 2*OUTFIT_OFFSET]   = name
+        local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
+        LWM.defaultOutfits[i + OUTFIT_OFFSET]       = name
+        LWM.allOutfits[i + 2*OUTFIT_OFFSET]         = name
+        LWM.allAlliedOutfits[i + 3*OUTFIT_OFFSET]   = name
     end
 end
 
@@ -93,8 +96,6 @@ function LWM.OnPlayerStealthState(_, unitTag, inStealth)
         LWM.inStealth = inStealth
         LWM.ChangeToStateOutfit()
     end
-
-    -- DEBUG
 end
 
 function LWM.OnPlayerRes()
@@ -120,10 +121,12 @@ function LWM:Initialize()
     for i=1,GetNumUnlockedOutfits() do
         local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
 
-        self.allOutfits[i + OUTFIT_OFFSET] = name
-        self.allOutfitChoices[i + OUTFIT_OFFSET] = i
-        self.allAlliedOutfits[i + 2*OUTFIT_OFFSET] = name
-        self.allAlliedOutfitChoices[i + 2*OUTFIT_OFFSET] = i
+        self.defaultOutfits[i + OUTFIT_OFFSET] = name
+        self.defaultOutfitChoices[i + OUTFIT_OFFSET] = i
+        self.allOutfits[i + 2*OUTFIT_OFFSET] = name
+        self.allOutfitChoices[i + 2*OUTFIT_OFFSET] = i
+        self.allAlliedOutfits[i + 3*OUTFIT_OFFSET] = name
+        self.allAlliedOutfitChoices[i + 3*OUTFIT_OFFSET] = i
     end
 
     if LWM.LibFeedbackInstalled then

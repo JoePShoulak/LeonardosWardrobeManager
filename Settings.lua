@@ -1,10 +1,18 @@
 local LAM2 = LibAddonMenu2
-local LWM   = LeonardosWardrobeManager
+local LWM  = LeonardosWardrobeManager
+
+local DEFAULT  = 1
+local ALLIANCE = 2
 
 -- LAM2 Helpers
-function LWM.MakeOutfitDropdown(name, tip, varName, disFunc, alliance)
-    outfits, choices = LWM.allOutfits, LWM.allOutfitChoices
-    if alliance then outfits, choices = LWM.allAlliedOutfits, LWM.allAlliedOutfitChoices end
+function LWM.MakeOutfitDropdown(name, tip, varName, disFunc, type)
+    local outfits, choices = LWM.allOutfits, LWM.allOutfitChoices
+    if type == DEFAULT then
+        outfits, choices = LWM.defaultOutfits, LWM.defaultOutfitChoices
+    elseif type == ALLIANCE then
+        outfits, choices = LWM.allAlliedOutfits, LWM.allAlliedOutfitChoices
+    end
+
     return {
         type = "dropdown",
         name = name,
@@ -40,7 +48,7 @@ local panelData = {
 
 local optionsData = {
     [1] = LWM.MakeDescription("Use command /lwmfeedback to leave feedback."),
-    [2] = LWM.MakeOutfitDropdown("Default", "by default", "default"),
+    [2] = LWM.MakeOutfitDropdown("Default", "by default", "default", nil, DEFAULT),
     [3] = LWM.MakeSubmenu("Combat", "Options related to combat and stealth", {
                 [1] = LWM.MakeOutfitDropdown("Stealth", "in stealth", "stealth"),
                 [2] = LWM.MakeDivider(),
@@ -66,34 +74,34 @@ local optionsData = {
         [4] = LWM.MakeSubmenu("Aldmeri Dominion", "Options related to Zones in the Aldmeri Dominion", {
             [1] = LWM.MakeOutfitDropdown("Dominion Default", "in the Aldmeri Dominion", "dominion"),
             [2] = LWM.MakeDivider(),
-            [3] = LWM.MakeOutfitDropdown("Auridon", "in Auridon", "auridon", nil, true),
-            [4] = LWM.MakeOutfitDropdown("Grahtwood", "in Grahtwood", "grahtwood", nil, true),
-            [5] = LWM.MakeOutfitDropdown("Greenshade", "in Greenshade", "greenshade", nil, true),
-            [6] = LWM.MakeOutfitDropdown("Khenarthi's Roost", "in Khenarthi's Roost", "khenarthi", nil, true),
-            [7] = LWM.MakeOutfitDropdown("Malabal Tor", "in Malabal Tor", "malabal", nil, true),
-            [8] = LWM.MakeOutfitDropdown("Reaper's March", "in Reaper's March", "reapers", nil, true),
+            [3] = LWM.MakeOutfitDropdown("Auridon", "in Auridon", "auridon", nil, ALLIANCE),
+            [4] = LWM.MakeOutfitDropdown("Grahtwood", "in Grahtwood", "grahtwood", nil, ALLIANCE),
+            [5] = LWM.MakeOutfitDropdown("Greenshade", "in Greenshade", "greenshade", nil, ALLIANCE),
+            [6] = LWM.MakeOutfitDropdown("Khenarthi's Roost", "in Khenarthi's Roost", "khenarthi", nil, ALLIANCE),
+            [7] = LWM.MakeOutfitDropdown("Malabal Tor", "in Malabal Tor", "malabal", nil, ALLIANCE),
+            [8] = LWM.MakeOutfitDropdown("Reaper's March", "in Reaper's March", "reapers", nil, ALLIANCE),
         }),
         [5] = LWM.MakeSubmenu("Daggerfall Covenant", "Options related to Zones in the Daggerfall Covenant", {
             [1] = LWM.MakeOutfitDropdown("Covenant Default", "in Daggerfall Covenant", "covenant"),
             [2] = LWM.MakeDivider(),
-            [3] = LWM.MakeOutfitDropdown("Alik'r Desert", "in Alik'r Desert", "alikr", nil, true),
-            [4] = LWM.MakeOutfitDropdown("Bangkorai", "in Bangkorai", "bangkorai", nil, true),
-            [5] = LWM.MakeOutfitDropdown("Betnikh", "in Betnikh", "betnikh", nil, true),
-            [6] = LWM.MakeOutfitDropdown("Glenumbra", "in Glenumbra", "glenumbra", nil, true),
-            [7] = LWM.MakeOutfitDropdown("Rivenspire", "in Rivenspire", "rivenspire", nil, true),
-            [8] = LWM.MakeOutfitDropdown("Stormhaven", "in Stormhaven", "stormhaven", nil, true),
-            [9] = LWM.MakeOutfitDropdown("Stros M'Kai", "in Stros M'Kai", "stros", nil, true),
+            [3] = LWM.MakeOutfitDropdown("Alik'r Desert", "in Alik'r Desert", "alikr", nil, ALLIANCE),
+            [4] = LWM.MakeOutfitDropdown("Bangkorai", "in Bangkorai", "bangkorai", nil, ALLIANCE),
+            [5] = LWM.MakeOutfitDropdown("Betnikh", "in Betnikh", "betnikh", nil, ALLIANCE),
+            [6] = LWM.MakeOutfitDropdown("Glenumbra", "in Glenumbra", "glenumbra", nil, ALLIANCE),
+            [7] = LWM.MakeOutfitDropdown("Rivenspire", "in Rivenspire", "rivenspire", nil, ALLIANCE),
+            [8] = LWM.MakeOutfitDropdown("Stormhaven", "in Stormhaven", "stormhaven", nil, ALLIANCE),
+            [9] = LWM.MakeOutfitDropdown("Stros M'Kai", "in Stros M'Kai", "stros", nil, ALLIANCE),
         }),
         [6] = LWM.MakeSubmenu("Ebonheart Pact", "Options related to Zones in the Ebonheart Pact", {
             [1] = LWM.MakeOutfitDropdown("Pact Default", "in Ebonheart Pact", "pact"),
             [2] = LWM.MakeDivider(),
-            [3] = LWM.MakeOutfitDropdown("Bal Foyen", "in Bal Foyen", "bal", nil, true),
-            [4] = LWM.MakeOutfitDropdown("Bleakrock Isle", "in Bleakrock Isle", "bleakrock", nil, true),
-            [5] = LWM.MakeOutfitDropdown("Deshaan", "in Deshaan", "deshaan", nil, true),
-            [6] = LWM.MakeOutfitDropdown("Eastmarch", "in Eastmarch", "eastmarch", nil, true),
-            [7] = LWM.MakeOutfitDropdown("The Rift", "in The Rift", "rift", nil, true),
-            [8] = LWM.MakeOutfitDropdown("Shadowfen", "in Shadowfen", "shadowfen", nil, true),
-            [9] = LWM.MakeOutfitDropdown("Stonefalls", "in Stonefalls", "stonefalls", nil, true),
+            [3] = LWM.MakeOutfitDropdown("Bal Foyen", "in Bal Foyen", "bal", nil, ALLIANCE),
+            [4] = LWM.MakeOutfitDropdown("Bleakrock Isle", "in Bleakrock Isle", "bleakrock", nil, ALLIANCE),
+            [5] = LWM.MakeOutfitDropdown("Deshaan", "in Deshaan", "deshaan", nil, ALLIANCE),
+            [6] = LWM.MakeOutfitDropdown("Eastmarch", "in Eastmarch", "eastmarch", nil, ALLIANCE),
+            [7] = LWM.MakeOutfitDropdown("The Rift", "in The Rift", "rift", nil, ALLIANCE),
+            [8] = LWM.MakeOutfitDropdown("Shadowfen", "in Shadowfen", "shadowfen", nil, ALLIANCE),
+            [9] = LWM.MakeOutfitDropdown("Stonefalls", "in Stonefalls", "stonefalls", nil, ALLIANCE),
         }),
         [7] = LWM.MakeSubmenu("Neutral", "Options related to Neutral Zones", {
             [1] = LWM.MakeOutfitDropdown("Coldharbour", "in Coldharbour", "coldharbour"),
