@@ -10,8 +10,8 @@ LWM.variableVersion = 14
 
 LWM.executing = false
 
-local NO_OUTFIT                     = 0
-local ALLIANCE_DEFAULT              = -1
+local NO_OUTFIT             = 0
+local ALLIANCE_DEFAULT      = -1
 
 LWM.allOutfits              = {"No Outfit"}
 LWM.allOutfitChoices        = {0}
@@ -81,14 +81,6 @@ function LWM.OnPlayerActivated(_, initial)
     end
 end
 
-function LWM.CheckState()
-    local inCombat = IsUnitInCombat("player")
-    local inStealth = GetUnitStealthState("player")
-
-    if inCombat ~= LWM.inCombat then LWM.inCombat = inCombat end
-    if inStealth ~= LWM.inStealth then LWM.inStealth = inStealth end
-end
-
 function LWM.OnPlayerCombatState(_, inCombat)
     if inCombat ~= LWM.inCombat then
         LWM.inCombat = inCombat
@@ -101,29 +93,16 @@ function LWM.OnPlayerStealthState(_, unitTag, inStealth)
         LWM.inStealth = inStealth
         LWM.ChangeToStateOutfit()
     end
+
+    -- DEBUG
 end
 
-function LWM.OnPlayerRes(_)
+function LWM.OnPlayerRes()
     LWM.CheckState()
     LWM.ChangeToStateOutfit()
 end
 
-function LWM.RenameUnnamedOutfits()
-    for i=1,GetNumUnlockedOutfits() do
-        local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
-        if name == "" then
-            name = "Outfit " .. tostring(i)
-
-            LWM.allOutfits[i + OUTFIT_OFFSET] = name
-            LWM.allOutfitChoices[i + OUTFIT_OFFSET] = i
-            LWM.allAlliedOutfits[i + 2*OUTFIT_OFFSET] = name
-            LWM.allAlliedOutfitChoices[i + 2*OUTFIT_OFFSET] = i
-            RenameOutfit(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i, name)
-        end
-    end
-end
-
-function LWM.OnPlayerUseOutfitStation(_)
+function LWM.OnPlayerUseOutfitStation()
     LWM.RenameUnnamedOutfits()
     LWM.ChangeToLocationOutfit()
 end
@@ -159,11 +138,11 @@ function LWM:Initialize()
         )
         button:SetHidden(true)
 
-        SLASH_COMMANDS['/lwmfeedback'] = function(_)
+        SLASH_COMMANDS['/lwmfeedback'] = function()
             LWM.feedback:SetHidden(false)
         end
     else
-        SLASH_COMMANDS['/lwmfeedback'] = function(_)
+        SLASH_COMMANDS['/lwmfeedback'] = function()
             d("Install LibFeedback to use this function.")
         end
     end

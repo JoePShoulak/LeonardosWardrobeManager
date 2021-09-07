@@ -1,6 +1,5 @@
 local LWM = LeonardosWardrobeManager
 
--- Helper functions
 function LWM.GetAbilityName(rawSlot, bar)
     bar = bar or HOTBAR_CATEGORY_PRIMARY
     local slot = rawSlot + 2
@@ -106,4 +105,71 @@ function LWM.ChangeToLocationOutfit()
     else
         LWM.ChangeToZoneOutfit()
     end
+end
+
+function LWM.RenameUnnamedOutfits()
+    for i=1,GetNumUnlockedOutfits() do
+        local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i)
+        if name == "" then
+            name = "Outfit " .. tostring(i)
+
+            LWM.allOutfits[i + OUTFIT_OFFSET] = name
+            LWM.allOutfitChoices[i + OUTFIT_OFFSET] = i
+            LWM.allAlliedOutfits[i + 2*OUTFIT_OFFSET] = name
+            LWM.allAlliedOutfitChoices[i + 2*OUTFIT_OFFSET] = i
+            RenameOutfit(GAMEPLAY_ACTOR_CATEGORY_PLAYER, i, name)
+        end
+    end
+end
+
+function LWM.CheckState()
+    local inCombat = IsUnitInCombat("player")
+    local inStealth = GetUnitStealthState("player")
+
+    if inCombat ~= LWM.inCombat then LWM.inCombat = inCombat end
+    if inStealth ~= LWM.inStealth then LWM.inStealth = inStealth end
+end
+
+function LWM.GetAllZoneIds()
+    return {
+        [3]     = {outfit=LWM.vars.outfitIndices.glenumbra,     alliance="covenant"},
+        [19]    = {outfit=LWM.vars.outfitIndices.stormhaven,    alliance="covenant"},
+        [20]    = {outfit=LWM.vars.outfitIndices.rivenspire,    alliance="covenant"},
+        [92]    = {outfit=LWM.vars.outfitIndices.bangkorai,     alliance="covenant"},
+        [104]   = {outfit=LWM.vars.outfitIndices.alikr,         alliance="covenant"},
+        [534]   = {outfit=LWM.vars.outfitIndices.stros,         alliance="covenant"},
+        [535]   = {outfit=LWM.vars.outfitIndices.betnikh,       alliance="covenant"},
+
+        [58]    = {outfit=LWM.vars.outfitIndices.malabal,       alliance="dominion"},
+        [108]   = {outfit=LWM.vars.outfitIndices.greenshade,    alliance="dominion"},
+        [381]   = {outfit=LWM.vars.outfitIndices.auridon,       alliance="dominion"},
+        [382]   = {outfit=LWM.vars.outfitIndices.reapers,       alliance="dominion"},
+        [383]   = {outfit=LWM.vars.outfitIndices.grahtwood,     alliance="dominion"},
+        [537]   = {outfit=LWM.vars.outfitIndices.khenarthi,     alliance="dominion"},
+
+        [41]    = {outfit=LWM.vars.outfitIndices.stonefalls,    alliance="pact"},
+        [57]    = {outfit=LWM.vars.outfitIndices.deshaan,       alliance="pact"},
+        [101]   = {outfit=LWM.vars.outfitIndices.eastmarch,     alliance="pact"},
+        [103]   = {outfit=LWM.vars.outfitIndices.rift,          alliance="pact"},
+        [117]   = {outfit=LWM.vars.outfitIndices.shadowfen,     alliance="pact"},
+        [280]   = {outfit=LWM.vars.outfitIndices.bleakrock,     alliance="pact"},
+        [281]   = {outfit=LWM.vars.outfitIndices.bal,           alliance="pact"},
+
+        [347]   = {outfit=LWM.vars.outfitIndices.coldharbour},
+        [684]   = {outfit=LWM.vars.outfitIndices.wrothgar},
+        [726]   = {outfit=LWM.vars.outfitIndices.murkmire},
+        [816]   = {outfit=LWM.vars.outfitIndices.hew},
+        [823]   = {outfit=LWM.vars.outfitIndices.gold},
+        [849]   = {outfit=LWM.vars.outfitIndices.vvardenfell},
+        [888]   = {outfit=LWM.vars.outfitIndices.craglorn},
+        [980]   = {outfit=LWM.vars.outfitIndices.clockwork},
+        [1011]  = {outfit=LWM.vars.outfitIndices.summerset},
+        [1086]  = {outfit=LWM.vars.outfitIndices.nelsweyr},
+        [1133]  = {outfit=LWM.vars.outfitIndices.selsweyr},
+        [1160]  = {outfit=LWM.vars.outfitIndices.skyrim},
+        [1161]  = {outfit=LWM.vars.outfitIndices.greymoor},
+        [1207]  = {outfit=LWM.vars.outfitIndices.reach},
+        [1208]  = {outfit=LWM.vars.outfitIndices.arkthzand},
+        [1261]  = {outfit=LWM.vars.outfitIndices.blackwood},
+    }
 end
